@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dinner Roulette</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    #result { font-size: 24px; margin-top: 30px; font-weight: bold; }
+    button { padding: 10px 20px; font-size: 18px; margin-top: 20px; }
+    canvas { margin-top: 20px; }
+  </style>
+</head>
+<body>
+    <div id="header" style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+        <h1 style="color: #343a40;">Dinner Roulette</h1>
+        <p style="color: #6c757d;">Spin the wheel to decide what to have for dinner!</p>
+        
+  <button onclick="spinWheel()">Spin the Wheel</button></div>
+  <div id="result"></div>
+  <div style="background-color: #ffffff; width: 100%; margin: 20px auto;">
+    <canvas id="wheelCanvas" width="400" height="400"></canvas></div>
+    <div>
+    </div>
+
+  <script>
+    const options = [
+      "Italian",
+      "Mexican",
+      "Thai",
+      "Indian",
+      "Mediterranean",
+      "Comfort Food",
+      "Breakfast for Dinner",
+      "Vegan/Vegetarian",
+      "5-Ingredient Meal",
+      "Fridge Mining"
+    ];
+
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const radius = canvas.width / 2;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    let angle = 0;
+    let spinning = false;
+
+    // Draw the wheel
+    function drawWheel() {
+      const sliceAngle = (2 * Math.PI) / options.length;
+      for (let i = 0; i < options.length; i++) {
+        const startAngle = i * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+
+        // Alternate colors for slices
+        ctx.fillStyle = i % 2 === 0 ? '#FFD700' : '#FF4500';
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fill();
+
+        // Add text
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#000';
+        ctx.font = '16px Arial';
+        ctx.fillText(options[i], radius - 10, 10);
+        ctx.restore();
+      }
+    }
+
+    // Spin the wheel
+    function spinWheel() {
+      if (spinning) return;
+      spinning = true;
+
+      const spinDuration = 3000; // Spin for 3 seconds
+      const spinSpeed = Math.random() * 5 + 5; // Random speed
+      const targetAngle = angle + Math.random() * 360 + 720; // At least 2 full rotations
+
+      const startTime = performance.now();
+
+      function animate() {
+        const elapsed = performance.now() - startTime;
+        if (elapsed < spinDuration) {
+          angle = (angle + spinSpeed) % 360;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.rotate((angle * Math.PI) / 180);
+          ctx.translate(-centerX, -centerY);
+          drawWheel();
+          ctx.restore();
+          requestAnimationFrame(animate);
+        } else {
+          spinning = false;
+          const finalIndex = Math.floor(((360 - (angle % 360)) / 360) * options.length) % options.length;
+          document.getElementById('result').innerText = "Tonight’s dinner: " + options[finalIndex];
+        }
+      }
+
+      animate();
+    }
+
+    // Initial draw
+    drawWheel();
+  </script>
+</body>
+</html>
