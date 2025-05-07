@@ -51,7 +51,9 @@
         const endAngle = startAngle + sliceAngle;
 
         // Alternate colors for slices
-        ctx.fillStyle = i % 2 === 0 ? '#FFD700' : '#FF4500' : '#FF6347' : '#FF8C00';
+        ctx.fillStyle = i % 2 === 0 ? '#FFD700' : '#FF4500';
+        const colors = ['#FFD700', '#FF4500', '#1E90FF', '#32CD32'];
+        ctx.fillStyle = colors[i % colors.length];
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
